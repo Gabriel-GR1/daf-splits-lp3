@@ -263,3 +263,32 @@ form.addEventListener('submit', async event => {
 });
 
 updateProgress();
+
+// Background fotográfico do hero (desktop): reconstruído a partir de partes
+// de texto versionadas no próprio repositório para manter o asset junto da LP.
+(async function loadHeroBackground() {
+  if (window.matchMedia('(max-width: 980px)').matches) return;
+
+  const hero = document.querySelector('.hero');
+  if (!hero || hero.querySelector('.hero-bg')) return;
+
+  try {
+    const files = Array.from({ length: 11 }, (_, index) =>
+      `./assets/bg-parts/bg-${String(index).padStart(2, '0')}.txt`
+    );
+
+    const parts = await Promise.all(files.map(async (url) => {
+      const response = await fetch(url, { cache: 'force-cache' });
+      if (!response.ok) throw new Error(`Falha ao carregar ${url}: ${response.status}`);
+      return (await response.text()).trim();
+    }));
+
+    const layer = document.createElement('div');
+    layer.className = 'hero-bg';
+    layer.setAttribute('aria-hidden', 'true');
+    layer.style.backgroundImage = `url("data:image/webp;base64,${parts.join('')}")`;
+    hero.prepend(layer);
+  } catch (error) {
+    console.error('Não foi possível carregar o background da LP3.', error);
+  }
+})();
