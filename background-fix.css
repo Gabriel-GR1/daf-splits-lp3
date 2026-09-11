@@ -1,0 +1,21 @@
+.page-shell::before {
+  background:
+    linear-gradient(90deg,
+      rgba(3,3,3,.54) 0%,
+      rgba(3,3,3,.42) 25%,
+      rgba(3,3,3,.22) 48%,
+      rgba(3,3,3,.36) 70%,
+      rgba(3,3,3,.58) 100%),
+    linear-gradient(180deg,
+      rgba(0,0,0,.14) 0%,
+      rgba(0,0,0,.22) 100%),
+    url('./assets/site-background-final.webp') center center / cover no-repeat !important;
+}
+
+@media (max-width: 980px) {
+  .page-shell::before {
+    background:
+      linear-gradient(180deg, rgba(3,3,3,.40) 0%, rgba(3,3,3,.62) 100%),
+      url('./assets/site-background-final.webp') 30% center / cover no-repeat !important;
+  }
+}
