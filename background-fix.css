@@ -1,21 +1,65 @@
-.page-shell::before {
-  background:
-    linear-gradient(90deg,
-      rgba(3,3,3,.54) 0%,
-      rgba(3,3,3,.42) 25%,
-      rgba(3,3,3,.22) 48%,
-      rgba(3,3,3,.36) 70%,
-      rgba(3,3,3,.58) 100%),
-    linear-gradient(180deg,
-      rgba(0,0,0,.14) 0%,
-      rgba(0,0,0,.22) 100%),
-    url('./assets/site-background-final.webp') center center / cover no-repeat !important;
+.hero {
+  position: relative;
+  isolation: isolate;
 }
 
+/*
+ * A fotografia ocupa somente o hero — exatamente a área abaixo do cabeçalho.
+ * O elemento é criado pelo background-loader.js para que a imagem preserve
+ * sua proporção e não interfira no restante da LP.
+ */
+.hero-bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  z-index: -2;
+  background-position: left center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: #050505;
+}
+
+/*
+ * Mantém os frascos visíveis à esquerda e aumenta o contraste sob os textos
+ * e, principalmente, na região direita onde fica o formulário.
+ */
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg,
+      rgba(3, 3, 3, .48) 0%,
+      rgba(3, 3, 3, .34) 18%,
+      rgba(3, 3, 3, .18) 38%,
+      rgba(3, 3, 3, .36) 58%,
+      rgba(3, 3, 3, .66) 76%,
+      rgba(3, 3, 3, .82) 100%),
+    linear-gradient(180deg,
+      rgba(0, 0, 0, .10) 0%,
+      rgba(0, 0, 0, .20) 100%);
+}
+
+.hero-copy,
+.form-card {
+  position: relative;
+  z-index: 1;
+}
+
+/* A imagem não invade o cabeçalho: o header permanece no fundo próprio. */
+.site-header {
+  position: relative;
+  z-index: 2;
+  background: #050505;
+}
+
+/* Mantemos o mobile sem essa fotografia, conforme o layout já aprovado. */
 @media (max-width: 980px) {
-  .page-shell::before {
-    background:
-      linear-gradient(180deg, rgba(3,3,3,.40) 0%, rgba(3,3,3,.62) 100%),
-      url('./assets/site-background-final.webp') 30% center / cover no-repeat !important;
+  .hero-bg {
+    display: none;
   }
 }
