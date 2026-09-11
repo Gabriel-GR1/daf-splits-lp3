@@ -4,11 +4,18 @@ const successState = document.getElementById('successState');
 const stepCounter = document.getElementById('stepCounter');
 const progressFill = document.getElementById('progressFill');
 const progressLabels = [...document.querySelectorAll('[data-label-step]')];
+const progressTop = document.getElementById('progressTop');
+const privacyNote = document.getElementById('privacyNote');
+const specificPrompt = document.getElementById('specificPrompt');
+const perfumeNameInput = document.getElementById('perfumeNameInput');
 const specificFields = document.getElementById('specificFields');
 const profileFields = document.getElementById('profileFields');
+const step2Title = document.getElementById('step2Title');
+const step2Intro = document.getElementById('step2Intro');
 const submitBtn = document.getElementById('submitBtn');
 
 let currentStep = 1;
+
 const submissionId = (window.crypto && typeof window.crypto.randomUUID === 'function')
   ? window.crypto.randomUUID()
   : `lead-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -16,40 +23,84 @@ const submissionId = (window.crypto && typeof window.crypto.randomUUID === 'func
 const utmParams = (() => {
   const params = new URLSearchParams(window.location.search);
   const keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid'];
-  return Object.fromEntries(keys.map(k => [k, params.get(k) || '']));
+  return Object.fromEntries(keys.map(key => [key, params.get(key) || '']));
 })();
 
 function updateProgress() {
   stepCounter.textContent = `0${currentStep} / 03`;
   progressFill.style.width = `${((currentStep - 1) / 2) * 100}%`;
-  progressLabels.forEach((el, index) => el.classList.toggle('active', index + 1 === currentStep));
+  progressLabels.forEach((el, index) => {
+    el.classList.toggle('active', index + 1 === currentStep);
+    el.classList.toggle('done', index + 1 < currentStep);
+  });
 }
 
 function showStep(step) {
   currentStep = Math.max(1, Math.min(3, step));
   steps.forEach(el => el.classList.toggle('active', Number(el.dataset.step) === currentStep));
   updateProgress();
-  document.querySelector('.form-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  if (window.matchMedia('(max-width: 980px)').matches) {
+    document.querySelector('.form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 function selectedIntent() {
   return form.querySelector('input[name="intent"]:checked')?.value || '';
 }
 
+function clearRadioGroup(name) {
+  form.querySelectorAll(`input[name="${name}"]`).forEach(input => { input.checked = false; });
+}
+
+function prepareIntentUI() {
+  const intent = selectedIntent();
+  const isSpecific = intent === 'perfume_especifico';
+
+  specificPrompt.classList.toggle('hidden', !isSpecific);
+
+  if (!isSpecific) {
+    perfumeNameInput.value = '';
+  } else {
+    requestAnimationFrame(() => perfumeNameInput.focus({ preventScroll: true }));
+  }
+}
+
 function prepareStep2() {
   const intent = selectedIntent();
   const isSpecific = intent === 'perfume_especifico';
+
   specificFields.classList.toggle('hidden', !isSpecific);
   profileFields.classList.toggle('hidden', isSpecific);
+
+  if (isSpecific) {
+    step2Title.textContent = 'SÃ³ mais duas coisas.';
+    step2Intro.textContent = 'Isso nos ajuda a entender sua intenÃ§Ã£o e a prioridade do seu pedido.';
+    form.querySelectorAll('input[name="styles"]').forEach(input => { input.checked = false; });
+    clearRadioGroup('occasion');
+  } else {
+    step2Title.textContent = intent === 'indicacao' ? 'Vamos encontrar o seu perfil.' : 'O que vocÃª gostaria de descobrir?';
+    step2Intro.textContent = 'Escolha as caracterÃ­sticas e a ocasiÃ£o que mais combinam com o que vocÃª procura.';
+    clearRadioGroup('purchase_goal');
+  }
 }
 
 function validateStep(step) {
   if (step === 1) {
     const error = document.getElementById('step1Error');
-    if (!selectedIntent()) {
+    const intent = selectedIntent();
+
+    if (!intent) {
       error.textContent = 'Selecione uma opÃ§Ã£o para continuar.';
       return false;
     }
+
+    if (intent === 'perfume_especifico' && perfumeNameInput.value.trim().length < 2) {
+      error.textContent = 'Informe qual perfume vocÃª estÃ¡ procurando.';
+      perfumeNameInput.focus();
+      return false;
+    }
+
     error.textContent = '';
     return true;
   }
@@ -57,16 +108,37 @@ function validateStep(step) {
   if (step === 2) {
     const error = document.getElementById('step2Error');
     const intent = selectedIntent();
+    const timing = form.querySelector('input[name="purchase_timing"]:checked');
+
     if (intent === 'perfume_especifico') {
-      const perfume = form.elements.perfume_name.value.trim();
-      if (!perfume) {
-        error.textContent = 'Informe qual perfume vocÃª procura.';
+      const goal = form.querySelector('input[name="purchase_goal"]:checked');
+      if (!goal) {
+        error.textContent = 'Conte o que vocÃª pretende fazer com esse perfume.';
+        return false;
+      }
+    } else {
+      const styles = [...form.querySelectorAll('input[name="styles"]:checked')];
+      const occasion = form.querySelector('input[name="occasion"]:checked');
+
+      if (!styles.length) {
+        error.textContent = 'Selecione ao menos um tipo de perfume.';
+        return false;
+      }
+      if (!occasion) {
+        error.textContent = 'Selecione a ocasiÃ£o principal.';
         return false;
       }
     }
+
+    if (!timing) {
+      error.textContent = 'Selecione quando vocÃª pretende comprar.';
+      return false;
+    }
+
     error.textContent = '';
     return true;
   }
+
   return true;
 }
 
@@ -82,12 +154,23 @@ document.querySelectorAll('[data-back]').forEach(button => {
   button.addEventListener('click', () => showStep(currentStep - 1));
 });
 
-form.addEventListener('change', (event) => {
+form.addEventListener('change', event => {
   if (event.target.name === 'intent') {
     document.getElementById('step1Error').textContent = '';
     document.querySelectorAll('.choice-card').forEach(card => {
       card.classList.toggle('selected', card.querySelector('input')?.checked);
     });
+    prepareIntentUI();
+  }
+
+  if (currentStep === 2) {
+    document.getElementById('step2Error').textContent = '';
+  }
+});
+
+perfumeNameInput.addEventListener('input', () => {
+  if (perfumeNameInput.value.trim().length >= 2) {
+    document.getElementById('step1Error').textContent = '';
   }
 });
 
@@ -96,6 +179,7 @@ function serializeForm() {
   return {
     intent: data.get('intent') || '',
     perfume_name: data.get('perfume_name') || '',
+    purchase_goal: data.get('purchase_goal') || '',
     purchase_timing: data.get('purchase_timing') || '',
     styles: data.getAll('styles'),
     occasion: data.get('occasion') || '',
@@ -107,6 +191,7 @@ function serializeForm() {
     consent: Boolean(data.get('consent')),
     page_url: window.location.href,
     user_agent: navigator.userAgent,
+    submitted_at: new Date().toISOString(),
     submission_id: submissionId,
     ...utmParams
   };
@@ -119,16 +204,29 @@ function basicContactValidation() {
   const consent = form.elements.consent.checked;
 
   if (name.length < 2) return 'Informe seu nome.';
-  if (phone.length < 10) return 'Informe um WhatsApp vÃ¡lido.';
+  if (phone.length < 10 || phone.length > 13) return 'Informe um WhatsApp vÃ¡lido.';
   if (email && !/^\S+@\S+\.\S+$/.test(email)) return 'Informe um e-mail vÃ¡lido ou deixe o campo vazio.';
   if (!consent) return 'Ã‰ necessÃ¡rio autorizar o contato para enviar a solicitaÃ§Ã£o.';
   return '';
 }
 
-form.addEventListener('submit', async (event) => {
+function formatPhoneInput(value) {
+  const digits = value.replace(/\D/g, '').slice(0, 11);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
+form.elements.phone.addEventListener('input', event => {
+  event.target.value = formatPhoneInput(event.target.value);
+});
+
+form.addEventListener('submit', async event => {
   event.preventDefault();
   const errorEl = document.getElementById('submitError');
   const validationError = basicContactValidation();
+
   if (validationError) {
     errorEl.textContent = validationError;
     return;
@@ -136,7 +234,7 @@ form.addEventListener('submit', async (event) => {
 
   errorEl.textContent = '';
   submitBtn.disabled = true;
-  submitBtn.firstChild.textContent = 'ENVIANDO... ';
+  submitBtn.innerHTML = 'ENVIANDO... <span>â†’</span>';
 
   try {
     const response = await fetch('/api/lead', {
@@ -145,12 +243,23 @@ form.addEventListener('submit', async (event) => {
       body: JSON.stringify(serializeForm())
     });
 
-    if (!response.ok) throw new Error('Falha no envio');
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || 'Falha no envio');
 
     steps.forEach(el => el.classList.remove('active'));
     successState.classList.add('active');
-    document.querySelector('.progress-top').style.display = 'none';
-    document.querySelectoŠ	Ëœš]˜XŞK[›İIÊKœİ[K™\Ü^HH	Û›Û™IÎÂ‚ˆYˆ
-\[ÙˆÚ[™İË™˜œHOOH	Ù[˜İ[Û‰ÊHÂˆÚ[™İË™˜œJ	İ˜XÚÉË	ÓXY	ÊNÂˆBˆHØ]Ú
-\œ›ÜŠHÂˆ\œ›Ü‘[^ÛÛ[H	Ó°èÛÈ›ÚHÜÜğë]™[[šX\ˆYÛÜ˜Kˆ[H›İ˜[Y[H[H[œİ[\Ë‰ÎÂˆİX›Z]‹™\ØX›YH˜[ÙNÂˆİX›Z]‹™š\œİÚ[^ÛÛ[H	ÑS•’PTˆÓÓPÒUpáğàÓÈ	ÎÂˆBŸJNÂ‚\]T›ÙÜ™\ÜÊ
-NÂ
+    progressTop.style.display = 'none';
+    privacyNote.style.display = 'none';
+
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'Lead');
+    }
+  } catch (error) {
+    console.error(error);
+    errorEl.textContent = 'NÃ£o foi possÃ­vel enviar agora. Tente novamente em alguns instantes.';
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = 'ENVIAR MINHA SOLICITAÃ‡ÃƒO <span>â†’</span>';
+  }
+});
+
+updateProgress();
