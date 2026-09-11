@@ -26,12 +26,11 @@
         <div class="eyebrow"><span></span> ENCONTRE COM A DAF</div>
         <h1>SUA PRÓXIMA <em>FRAGRÂNCIA.</em></h1>
         <p class="lead">Conte para a DAF o que você procura. Vamos usar sua resposta para verificar disponibilidade, entender a demanda e entrar em contato com as melhores opções para você.</p>
-
         <div class="hero-photo" role="img" aria-label="Perfumes e decante DAF Splits"></div>
       </div>
 
       <section class="form-card" aria-labelledby="form-title">
-        <div class="progress-top">
+        <div class="progress-top" id="progressTop">
           <span id="stepCounter">01 / 03</span>
           <div class="progress-line" aria-hidden="true">
             <span class="progress-fill" id="progressFill"></span>
@@ -49,6 +48,8 @@
               <input type="text" name="website" tabindex="-1" autocomplete="off">
             </label>
           </div>
+
+          <!-- ETAPA 1 -->
           <div class="form-step active" data-step="1">
             <h2 id="form-title">Como podemos te ajudar?</h2>
             <p class="form-intro">Selecione a opção que melhor descreve o que você procura.</p>
@@ -82,33 +83,45 @@
               </label>
             </div>
 
+            <div id="specificPrompt" class="inline-followup hidden" aria-live="polite">
+              <label class="field">
+                <span>Qual perfume você está procurando?</span>
+                <input id="perfumeNameInput" type="text" name="perfume_name" placeholder="Ex.: Xerjoff Naxos" autocomplete="off">
+              </label>
+            </div>
+
             <p class="field-error" id="step1Error" aria-live="polite"></p>
             <button class="primary-btn" type="button" data-next>CONTINUAR <span>→</span></button>
           </div>
 
+          <!-- ETAPA 2 -->
           <div class="form-step" data-step="2">
-            <h2>Conte um pouco mais.</h2>
-            <p class="form-intro">Só o necessário para entendermos melhor o seu perfil.</p>
+            <h2 id="step2Title">Conte um pouco mais.</h2>
+            <p class="form-intro" id="step2Intro">Só o necessário para entendermos melhor o seu perfil.</p>
 
             <div id="specificFields" class="conditional-fields hidden">
-              <label class="field">
-                <span>Qual perfume você está procurando?</span>
-                <input type="text" name="perfume_name" placeholder="Ex.: Xerjoff Naxos">
-              </label>
-              <label class="field">
-                <span>Quando pretende comprar?</span>
-                <select name="purchase_timing">
-                  <option value="">Selecione</option>
-                  <option value="agora">O quanto antes</option>
-                  <option value="30_dias">Nos próximos 30 dias</option>
-                  <option value="pesquisando">Ainda estou pesquisando</option>
-                </select>
-              </label>
+              <fieldset class="field option-field">
+                <legend>O que você pretende?</legend>
+                <div class="radio-grid three-options">
+                  <label>
+                    <input type="radio" name="purchase_goal" value="experimentar_decante">
+                    <span><strong>Experimentar</strong><small>Através de um decante</small></span>
+                  </label>
+                  <label>
+                    <input type="radio" name="purchase_goal" value="comprar_frasco">
+                    <span><strong>Comprar um frasco</strong><small>Futuramente</small></span>
+                  </label>
+                  <label>
+                    <input type="radio" name="purchase_goal" value="pesquisando">
+                    <span><strong>Ainda estou pesquisando</strong><small>Quero conhecer melhor</small></span>
+                  </label>
+                </div>
+              </fieldset>
             </div>
 
             <div id="profileFields" class="conditional-fields hidden">
               <fieldset class="field chip-field">
-                <legend>Que perfil de fragrância você procura?</legend>
+                <legend>Que tipo de perfume você procura?</legend>
                 <div class="chips">
                   <label><input type="checkbox" name="styles" value="fresco"><span>Fresco</span></label>
                   <label><input type="checkbox" name="styles" value="doce"><span>Doce</span></label>
@@ -116,29 +129,40 @@
                   <label><input type="checkbox" name="styles" value="elegante"><span>Elegante</span></label>
                   <label><input type="checkbox" name="styles" value="marcante"><span>Marcante</span></label>
                   <label><input type="checkbox" name="styles" value="versatil"><span>Versátil</span></label>
+                  <label><input type="checkbox" name="styles" value="nao_sei"><span>Não sei ainda</span></label>
                 </div>
               </fieldset>
-              <label class="field">
-                <span>Para qual ocasião?</span>
-                <select name="occasion">
-                  <option value="">Selecione</option>
-                  <option value="dia_a_dia">Dia a dia</option>
-                  <option value="trabalho_faculdade">Trabalho / faculdade</option>
-                  <option value="encontros">Encontros</option>
-                  <option value="noite_festas">Noite / festas</option>
-                  <option value="ocasioes_especiais">Ocasiões especiais</option>
-                  <option value="versatil">Quero algo versátil</option>
-                </select>
-              </label>
+
+              <fieldset class="field option-field">
+                <legend>Para qual ocasião?</legend>
+                <div class="radio-grid compact-options">
+                  <label><input type="radio" name="occasion" value="dia_a_dia"><span>Dia a dia</span></label>
+                  <label><input type="radio" name="occasion" value="trabalho_faculdade"><span>Faculdade / trabalho</span></label>
+                  <label><input type="radio" name="occasion" value="encontros"><span>Encontros</span></label>
+                  <label><input type="radio" name="occasion" value="noite_festas"><span>Noite / festas</span></label>
+                  <label><input type="radio" name="occasion" value="ocasioes_especiais"><span>Ocasiões especiais</span></label>
+                  <label><input type="radio" name="occasion" value="versatil"><span>Quero algo versátil</span></label>
+                </div>
+              </fieldset>
             </div>
 
+            <fieldset class="field option-field timing-field">
+              <legend>Quando você pretende comprar?</legend>
+              <div class="radio-grid three-options">
+                <label><input type="radio" name="purchase_timing" value="agora"><span><strong>O quanto antes</strong></span></label>
+                <label><input type="radio" name="purchase_timing" value="30_dias"><span><strong>Nos próximos 30 dias</strong></span></label>
+                <label><input type="radio" name="purchase_timing" value="pesquisando"><span><strong>Ainda não sei</strong></span></label>
+              </div>
+            </fieldset>
+
+            <p class="field-error" id="step2Error" aria-live="polite"></p>
             <div class="form-actions">
               <button class="secondary-btn" type="button" data-back>← VOLTAR</button>
               <button class="primary-btn" type="button" data-next>CONTINUAR <span>→</span></button>
             </div>
-            <p class="field-error" id="step2Error" aria-live="polite"></p>
           </div>
 
+          <!-- ETAPA 3 -->
           <div class="form-step" data-step="3">
             <h2>Como podemos falar com você?</h2>
             <p class="form-intro">Deixe seu contato para retornarmos sobre a sua solicitação.</p>
@@ -166,25 +190,26 @@
 
             <label class="consent">
               <input type="checkbox" name="consent" required>
-              <span>Concordo em receber contato da DAF Splits sobre esta solicitação.</span>
+              <span>Ao enviar, você autoriza a DAF Splits a entrar em contato sobre sua solicitação. Seus dados não serão compartilhados com terceiros.</span>
             </label>
 
+            <p class="field-error" id="submitError" aria-live="polite"></p>
             <div class="form-actions">
               <button class="secondary-btn" type="button" data-back>← VOLTAR</button>
-              <button class="primary-btn" type="submit" id="submitBtn">ENVIAR SOLICITAÇÃO <span>→</span></button>
+              <button class="primary-btn" type="submit" id="submitBtn">ENVIAR MINHA SOLICITAÇÃO <span>→</span></button>
             </div>
-            <p class="field-error" id="submitError" aria-live="polite"></p>
           </div>
 
           <div class="success-state" id="successState" aria-live="polite">
             <div class="success-mark">✓</div>
             <p class="eyebrow success-eyebrow">SOLICITAÇÃO RECEBIDA</p>
-            <h2>Já sabemos o que você procura.</h2>
-            <p>Recebemos suas respostas. A equipe da DAF poderá entrar em contato pelo WhatsApp com opções compatíveis.</p>
+            <h2>Já sabemos o que você está procurando.</h2>
+            <p>Se encontrarmos uma opção compatível, a equipe da DAF poderá entrar em contato pelo WhatsApp.</p>
+            <strong class="success-confirmation">✓ Seus dados foram enviados</strong>
           </div>
         </form>
 
-        <div class="privacy-note">
+        <div class="privacy-note" id="privacyNote">
           <span>▣</span>
           <div>
             <strong>Seus dados estão seguros conosco.</strong>
