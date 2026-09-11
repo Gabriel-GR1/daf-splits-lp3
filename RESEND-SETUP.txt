@@ -1,0 +1,91 @@
+DAF SPLITS - LP3 | CONFIGURAÇÃO DO ENVIO POR E-MAIL
+====================================================
+
+Esta versão NÃO usa Google Cloud, Google Sheets ou banco de dados.
+Cada formulário enviado:
+1) chega à função /api/lead da Vercel;
+2) vira uma ficha PDF de 2 páginas;
+3) é enviado por e-mail para a DAF;
+4) as principais respostas aparecem também no corpo do e-mail.
+
+PASSO 1 - CRIAR CONTA NO RESEND
+--------------------------------
+1. Acesse https://resend.com e crie a conta.
+2. No painel, crie uma API Key.
+3. Copie a chave (começa com re_). Ela será exibida para configuração na Vercel.
+
+IMPORTANTE SOBRE O REMETENTE
+-----------------------------
+Para teste inicial, use:
+DAF Splits <onboarding@resend.dev>
+
+O remetente de teste do Resend pode ter restrições de destinatário. Para uso em produção,
+recomenda-se verificar um domínio da DAF no Resend e usar, por exemplo:
+DAF Splits <leads@seudominio.com.br>
+
+PASSO 2 - CONFIGURAR A VERCEL
+------------------------------
+Vercel > Project > Settings > Environment Variables
+
+Crie:
+
+RESEND_API_KEY
+Valor: sua chave re_xxxxxxxxx
+
+LEADS_EMAIL
+Valor: e-mail que receberá os leads.
+Exemplo: contato@dafsplits.com.br
+Você pode colocar mais de um e-mail separado por vírgula:
+email1@gmail.com,email2@gmail.com,email3@gmail.com
+
+RESEND_FROM
+Para teste:
+DAF Splits <onboarding@resend.dev>
+
+Depois de verificar o domínio no Resend, troque para o endereço verificado.
+
+PASSO 3 - REDEPLOY
+-------------------
+Depois de salvar as variáveis, faça um novo deploy do projeto na Vercel.
+
+PASSO 4 - TESTE
+----------------
+1. Abra a LP publicada.
+2. Preencha o formulário como se fosse um cliente.
+3. Clique em ENVIAR SOLICITAÇÃO.
+4. Confira o e-mail configurado em LEADS_EMAIL.
+5. Você deve receber:
+   - as respostas no corpo do e-mail;
+   - um PDF chamado Lead_DAF_Nome_YYYY-MM-DD.pdf.
+
+DADOS DO PDF
+-------------
+Página 1:
+- data/hora
+- nome
+- WhatsApp
+- e-mail
+- intenção
+- perfume procurado
+- momento de compra
+- perfis olfativos
+- ocasião
+- sugestão de perfume para o estoque
+
+Página 2:
+- UTM Source
+- UTM Medium
+- UTM Campaign
+- UTM Content
+- UTM Term
+- FBCLID
+- página de origem
+- consentimento
+- navegador/dispositivo
+
+SEGURANÇA
+----------
+- NUNCA coloque a RESEND_API_KEY dentro do index.html ou script.js.
+- NUNCA publique a chave no GitHub.
+- A chave deve existir somente nas variáveis privadas da Vercel.
+- O navegador envia o formulário somente para /api/lead.

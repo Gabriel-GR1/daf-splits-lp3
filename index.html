@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Conte para a DAF Splits qual perfume você procura e receba uma orientação personalizada." />
+  <meta name="theme-color" content="#050505" />
+  <title>Encontre sua próxima fragrância | DAF Splits</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="DAF Splits">
+        <img src="./assets/logo.png" alt="DAF Splits" />
+      </a>
+      <p class="brand-line">MAIS QUE PERFUMES, EXPERIÊNCIAS.</p>
+    </header>
+
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <div class="eyebrow"><span></span> ENCONTRE COM A DAF</div>
+        <h1>SUA PRÓXIMA <em>FRAGRÂNCIA.</em></h1>
+        <p class="lead">Conte para a DAF o que você procura. Vamos usar sua resposta para verificar disponibilidade, entender a demanda e entrar em contato com as melhores opções para você.</p>
+
+        <div class="hero-photo" role="img" aria-label="Perfumes e decante DAF Splits"></div>
+      </div>
+
+      <section class="form-card" aria-labelledby="form-title">
+        <div class="progress-top">
+          <span id="stepCounter">01 / 03</span>
+          <div class="progress-line" aria-hidden="true">
+            <span class="progress-fill" id="progressFill"></span>
+          </div>
+          <div class="progress-labels">
+            <span class="active" data-label-step="1">PERFUME</span>
+            <span data-label-step="2">PREFERÊNCIAS</span>
+            <span data-label-step="3">CONTATO</span>
+          </div>
+        </div>
+
+        <form id="leadForm" novalidate>
+          <div class="hp-field" aria-hidden="true">
+            <label>Website
+              <input type="text" name="website" tabindex="-1" autocomplete="off">
+            </label>
+          </div>
+          <div class="form-step active" data-step="1">
+            <h2 id="form-title">Como podemos te ajudar?</h2>
+            <p class="form-intro">Selecione a opção que melhor descreve o que você procura.</p>
+
+            <div class="choice-list" role="radiogroup" aria-label="O que você procura?">
+              <label class="choice-card">
+                <input type="radio" name="intent" value="perfume_especifico" required>
+                <span class="choice-icon">⌕</span>
+                <span>
+                  <strong>Já tenho um perfume em mente</strong>
+                  <small>Quero verificar a disponibilidade.</small>
+                </span>
+              </label>
+
+              <label class="choice-card">
+                <input type="radio" name="intent" value="indicacao" required>
+                <span class="choice-icon">◈</span>
+                <span>
+                  <strong>Quero uma indicação</strong>
+                  <small>Me ajudem a encontrar o perfume ideal.</small>
+                </span>
+              </label>
+
+              <label class="choice-card">
+                <input type="radio" name="intent" value="descobrir" required>
+                <span class="choice-icon">◇</span>
+                <span>
+                  <strong>Quero descobrir algo novo</strong>
+                  <small>Quero conhecer novas fragrâncias.</small>
+                </span>
+              </label>
+            </div>
+
+            <p class="field-error" id="step1Error" aria-live="polite"></p>
+            <button class="primary-btn" type="button" data-next>CONTINUAR <span>→</span></button>
+          </div>
+
+          <div class="form-step" data-step="2">
+            <h2>Conte um pouco mais.</h2>
+            <p class="form-intro">Só o necessário para entendermos melhor o seu perfil.</p>
+
+            <div id="specificFields" class="conditional-fields hidden">
+              <label class="field">
+                <span>Qual perfume você está procurando?</span>
+                <input type="text" name="perfume_name" placeholder="Ex.: Xerjoff Naxos">
+              </label>
+              <label class="field">
+                <span>Quando pretende comprar?</span>
+                <select name="purchase_timing">
+                  <option value="">Selecione</option>
+                  <option value="agora">O quanto antes</option>
+                  <option value="30_dias">Nos próximos 30 dias</option>
+                  <option value="pesquisando">Ainda estou pesquisando</option>
+                </select>
+              </label>
+            </div>
+
+            <div id="profileFields" class="conditional-fields hidden">
+              <fieldset class="field chip-field">
+                <legend>Que perfil de fragrância você procura?</legend>
+                <div class="chips">
+                  <label><input type="checkbox" name="styles" value="fresco"><span>Fresco</span></label>
+                  <label><input type="checkbox" name="styles" value="doce"><span>Doce</span></label>
+                  <label><input type="checkbox" name="styles" value="amadeirado"><span>Amadeirado</span></label>
+                  <label><input type="checkbox" name="styles" value="elegante"><span>Elegante</span></label>
+                  <label><input type="checkbox" name="styles" value="marcante"><span>Marcante</span></label>
+                  <label><input type="checkbox" name="styles" value="versatil"><span>Versátil</span></label>
+                </div>
+              </fieldset>
+              <label class="field">
+                <span>Para qual ocasião?</span>
+                <select name="occasion">
+                  <option value="">Selecione</option>
+                  <option value="dia_a_dia">Dia a dia</option>
+                  <option value="trabalho_faculdade">Trabalho / faculdade</option>
+                  <option value="encontros">Encontros</option>
+                  <option value="noite_festas">Noite / festas</option>
+                  <option value="ocasioes_especiais">Ocasiões especiais</option>
+                  <option value="versatil">Quero algo versátil</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button class="secondary-btn" type="button" data-back>← VOLTAR</button>
+              <button class="primary-btn" type="button" data-next>CONTINUAR <span>→</span></button>
+            </div>
+            <p class="field-error" id="step2Error" aria-live="polite"></p>
+          </div>
+
+          <div class="form-step" data-step="3">
+            <h2>Como podemos falar com você?</h2>
+            <p class="form-intro">Deixe seu contato para retornarmos sobre a sua solicitação.</p>
+
+            <div class="two-cols">
+              <label class="field">
+                <span>Nome</span>
+                <input type="text" name="name" autocomplete="name" placeholder="Seu nome" required>
+              </label>
+              <label class="field">
+                <span>WhatsApp</span>
+                <input type="tel" name="phone" autocomplete="tel" inputmode="tel" placeholder="(31) 99999-9999" required>
+              </label>
+            </div>
+
+            <label class="field">
+              <span>E-mail <small>(opcional)</small></span>
+              <input type="email" name="email" autocomplete="email" placeholder="voce@email.com">
+            </label>
+
+            <label class="field">
+              <span>Tem algum perfume que gostaria de ver futuramente na DAF? <small>(opcional)</small></span>
+              <input type="text" name="future_perfume" placeholder="Pode indicar mais de um">
+            </label>
+
+            <label class="consent">
+              <input type="checkbox" name="consent" required>
+              <span>Concordo em receber contato da DAF Splits sobre esta solicitação.</span>
+            </label>
+
+            <div class="form-actions">
+              <button class="secondary-btn" type="button" data-back>← VOLTAR</button>
+              <button class="primary-btn" type="submit" id="submitBtn">ENVIAR SOLICITAÇÃO <span>→</span></button>
+            </div>
+            <p class="field-error" id="submitError" aria-live="polite"></p>
+          </div>
+
+          <div class="success-state" id="successState" aria-live="polite">
+            <div class="success-mark">✓</div>
+            <p class="eyebrow success-eyebrow">SOLICITAÇÃO RECEBIDA</p>
+            <h2>Já sabemos o que você procura.</h2>
+            <p>Recebemos suas respostas. A equipe da DAF poderá entrar em contato pelo WhatsApp com opções compatíveis.</p>
+          </div>
+        </form>
+
+        <div class="privacy-note">
+          <span>▣</span>
+          <div>
+            <strong>Seus dados estão seguros conosco.</strong>
+            <p>Utilizaremos suas informações apenas para entrar em contato sobre sua solicitação. Seus dados não serão compartilhados com terceiros.</p>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>
