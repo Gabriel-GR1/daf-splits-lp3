@@ -26,6 +26,23 @@ const utmParams = (() => {
   return Object.fromEntries(keys.map(key => [key, params.get(key) || '']));
 })();
 
+function readCookie(name) {
+  const prefix = `${name}=`;
+  const item = document.cookie.split(';').map(part => part.trim()).find(part => part.startsWith(prefix));
+  return item ? decodeURIComponent(item.slice(prefix.length)) : '';
+}
+
+function getMetaBrowserData() {
+  const fbp = readCookie('_fbp');
+  let fbc = readCookie('_fbc');
+
+  if (!fbc && utmParams.fbclid) {
+    fbc = `fb.1.${Date.now()}.${utmParams.fbclid}`;
+  }
+
+  return { fbp, fbc };
+}
+
 function updateProgress() {
   stepCounter.textContent = `0${currentStep} / 03`;
   progressFill.style.width = `${((currentStep - 1) / 2) * 100}%`;
@@ -193,7 +210,8 @@ function serializeForm() {
     user_agent: navigator.userAgent,
     submitted_at: new Date().toISOString(),
     submission_id: submissionId,
-    ...utmParams
+    ...utmParams,
+    ...getMetaBrowserData()
   };
 }
 
@@ -237,10 +255,11 @@ form.addEventListener('submit', async event => {
   submitBtn.innerHTML = 'ENVIANDO... <span>→</span>';
 
   try {
+    const payload = serializeForm();
     const response = await fetch('/api/lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(serializeForm())
+      body: JSON.stringify(payload)
     });
 
     const result = await response.json().catch(() => ({}));
@@ -252,8 +271,15 @@ form.addEventListener('submit', async event => {
     privacyNote.style.display = 'none';
 
     if (typeof window.fbq === 'function') {
-      window.fbq('track', 'Lead');
+      window.fbq('track', 'Lead', {}, { eventID: submissionId });
     }
+
+    fetch('/api/meta-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true
+    }).catch(error => console.error('Meta CAPI:', error));
   } catch (error) {
     console.error(error);
     errorEl.textContent = 'Não foi possível enviar agora. Tente novamente em alguns instantes.';
